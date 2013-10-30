@@ -1,5 +1,5 @@
 
-// Just adding a test comment with NetBeans
+// test comment
 
 //--- CODE --------------------------
 
