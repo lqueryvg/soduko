@@ -79,8 +79,6 @@ Cell.prototype.get_value = function (new_value) {
 Cell.prototype.remove_candidate = function (value) {
   trace("in Cell.prototype.remove_candidate()");
   Candidates.prototype.remove_candidate.call(this, value);
-  
-  // Technique #2: Single Candidate
   if (this.num_candidates === 1) {
     var must_be_value = this.get_only_remaining_candidate();
     console.log("value must be " + must_be_value);
@@ -133,12 +131,6 @@ ConstraintGroup.prototype.cell_changed = function (changed_cell, new_value) {
   });
   // TODO:
   // Check to see if any candidate appears only once.
-  // This is Technique #1: Single Position
-  // See http://www.sudokuoftheday.com/pages/techniques-overview.php
-  // For example, all of the cells in the group could have still have multiple
-  // candidates, but a particular candidate might only appear in one cell.
-  // I've decided to move this to the solving logic
-  
 };
 // End: ConstraintGroup
 /*---------------------------------------------------------*/
