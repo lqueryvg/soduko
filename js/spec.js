@@ -5,7 +5,7 @@ describe("Candidates tests", function() {
   var cand;
 
   beforeEach(function() {
-    cand = new Candidates([100, 200, 300, 400, 500]);
+    cand = new Sud.Candidates([100, 200, 300, 400, 500]);
   });
 
   it("count_candidates()).toBe(5)", function() {
@@ -29,13 +29,24 @@ describe("Candidates tests", function() {
     cand.remove_candidate(500);
     expect(cand.count_candidates()).toBe(4);
   });
+
+  it("remove_candidate(500).toThow error after removing all", function() {
+    cand.remove_candidate(100);
+    cand.remove_candidate(200);
+    cand.remove_candidate(300);
+    cand.remove_candidate(400);
+    expect(function() {
+      cand.remove_candidate(500);
+    }).toThrow(new Error(
+            'cell has 0 remaining candidates'));
+  });
 });
 
 describe("Cell tests", function() {
   var cell;
 
   beforeEach(function() {
-    cell = new Cell([100, 200, 300, 400, 500]);
+    cell = new Sud.Cell([100, 200, 300, 400, 500]);
   });
 
   it("value_is_a_candidate(200)).toBe(true)", function() {
@@ -68,11 +79,11 @@ describe("Candidate tests", function() {
   var cell1, cell2, cell3;
   var grp1, grp2;
   beforeEach(function() {
-    cell1 = new Cell([1, 2]);
-    cell2 = new Cell([1, 2]);
-    cell3 = new Cell([1, 2]);
-    grp1 = new ConstraintGroup([cell1, cell2]);
-    grp2 = new ConstraintGroup([cell2, cell3]);
+    cell1 = new Sud.Cell([1, 2]);
+    cell2 = new Sud.Cell([1, 2]);
+    cell3 = new Sud.Cell([1, 2]);
+    grp1 = new Sud.ConstraintGroup([cell1, cell2]);
+    grp2 = new Sud.ConstraintGroup([cell2, cell3]);
   });
 
   it("cell1.get_value().toBe(1) after cell1.set_value(1)", function() {

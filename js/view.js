@@ -11,6 +11,7 @@ $(document).ready(function() {
   var aspects;
   var cell1, cell2, cell3;
   var grp1, grp2, aspects;
+  
   var html = '<table>', cell_name;
 
   [1, 2, 3].forEach(function(row) {
@@ -31,13 +32,13 @@ $(document).ready(function() {
   aspects = new Aspects();
   aspects.addBefore(function(arg) {
       console.log("Cell.set_value(" + arg + ") called");
-  }, Cell, "set_value");
+  }, Sud.Cell, "set_value");
   
-  cell1 = new Cell([1, 2]);
-  cell2 = new Cell([1, 2]);
-  cell3 = new Cell([1, 2]);
-  grp1 = new ConstraintGroup([cell1, cell2]);
-  grp2 = new ConstraintGroup([cell2, cell3]);
+  cell1 = new Sud.Cell([1, 2]);
+  cell2 = new Sud.Cell([1, 2]);
+  cell3 = new Sud.Cell([1, 2]);
+  grp1 = new Sud.ConstraintGroup([cell1, cell2]);
+  grp2 = new Sud.ConstraintGroup([cell2, cell3]);
   
   cell1.set_value(1);
 });
