@@ -54,14 +54,19 @@ var Sud = (function() {
 
   /*---------------------------------------------------------*/
 // Begin: Cell Object
-  pub.Cell = function(possible_values_arr) { // Constructor
+  pub.Cell = function(possible_values_arr, name) { // Constructor
     pub.Candidates.call(this, possible_values_arr);
     this.value = null; // no value yet
+    this.cell_name = name;    // TODO: not sure if name works
     this.constraint_groups = [];
   };
   pub.Cell.prototype = Object.create(pub.Candidates.prototype); // Inheritance
   pub.Cell.prototype.add_constraint_group = function(grp) {
     this.constraint_groups.push(grp);
+  };
+
+  pub.Cell.toString = function() {  // TODO: not sure if this name works
+    return this.name;
   };
 
   pub.Cell.prototype.get_value = function(new_value) {
@@ -107,6 +112,12 @@ var Sud = (function() {
       cell.add_constraint_group(that);
     });
   };
+
+  pub.ConstraintGroup.prototype.add_cell = function(cell) {
+    this.cells.push(cell);
+    cell.add_constraint_group(this);
+  };
+
   pub.ConstraintGroup.prototype.cell_changed = function(changed_cell, new_value) {
     // Apply constraint for all other cells in this group.
 
@@ -131,36 +142,54 @@ var Sud = (function() {
 
   /*---------------------------------------------------------*/
 
-  pub.get_box_coord = function(coord) {
-    return((coord - 1) % 3 + 1);
-  };
-  /*---------------------------------------------------------*/
-  // Begin: ConstraintGroup
   pub.Puzzle = function() { // Constructor
-    this.possible_values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-    this.grid = [];
-    this.columns = [];
-    this.rows = [];
-    this.boxes = [];
+    var that = this;
+    that.possible_values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    that.grid = [];
+    that.cols = [];
+    that.rows = [];
+    that.boxes = [];
 
+    // Initialise empty constraint groups.
+    [1, 2, 3].forEach(function(boxcol) {
+      var col = [];
+      [1, 2, 3].forEach(function() {  // row
+        col.push(new pub.ConstraintGroup([]));
+      });
+      that.boxes.push(col);
+    });
 
-    this.possible_values.forEach(function(col) {
-      this.possible_values.forEach(function(row) {
-        var cell = new Sud.Cell(this.possible_values);
-        this.grid[col][row] = cell;
-        this.columns[col].push(cell);
-        this.rows[row].push(cell);
-        this.boxes[pub.get_box_coord(col)][pub.get_box_coord(row)].push(cell);
+    that.possible_values.forEach(function() {
+      that.cols.push(new pub.ConstraintGroup([]));
+      that.rows.push(new pub.ConstraintGroup([]));
+    });
+
+    that.possible_values.forEach(function(col) {
+      that.grid.push([]);
+      that.possible_values.forEach(function(row) {
+
+        // TODO: not sure if cell name works
+        var cell = new Sud.Cell(that.possible_values,
+                "c" + col.toString() + row.toString());
+        that.grid[col - 1][row - 1] = cell;
+        that.cols[col - 1].add_cell(cell);
+        that.rows[row - 1].add_cell(cell);
+        that.get_box_group(col, row).add_cell(cell);
       });
     });
-    
-    // TODO: add cell method for constraint group would be useful.
+  };  // Puzzle
 
-    cell1 = new Sud.Cell([1, 2]);
-    cell2 = new Sud.Cell([1, 2]);
-    cell3 = new Sud.Cell([1, 2]);
-    grp1 = new Sud.ConstraintGroup([cell1, cell2]);
-    grp2 = new Sud.ConstraintGroup([cell2, cell3]);
+  pub.Puzzle.prototype.coord_to_box = function(cell_i) {
+    // cell_i is a row or column number of a cell
+    return((cell_i - 1) % 3 + 1);
+  };
+
+  pub.Puzzle.prototype.get_box_group = function(col, row) {
+    var bcol, brow;
+
+    bcol = this.coord_to_box(col);
+    brow = this.coord_to_box(row);
+    return this.boxes[bcol - 1][brow - 1];
   };
 
   return pub;

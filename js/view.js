@@ -11,6 +11,7 @@ $(document).ready(function() {
   var aspects;
   var cell1, cell2, cell3;
   var grp1, grp2, aspects;
+  var puzzle;
   
   var html = '<table>', cell_name;
 
@@ -27,8 +28,6 @@ $(document).ready(function() {
 
   $(html).appendTo('body');
   
-  
-  
   aspects = new Aspects();
   aspects.addBefore(function(arg) {
       console.log("Cell.set_value(" + arg + ") called");
@@ -40,5 +39,9 @@ $(document).ready(function() {
   grp1 = new Sud.ConstraintGroup([cell1, cell2]);
   grp2 = new Sud.ConstraintGroup([cell2, cell3]);
   
+  
   cell1.set_value(1);
+  
+  puzzle = new Sud.Puzzle();
+  
 });
