@@ -92,41 +92,50 @@ $(document).ready(function() {
     var create_tab;
     var tab;
 
-    create_tab = function(cell_contents_fn) {
+    create_tab = function(cell_class, id_prefix, cell_contents_fn) {
       var outer_table;
 
       outer_table = document.createElement('table');
 
-      [1, 2, 3].forEach(function(brow) {
+      [1, 2, 3].forEach(function foreach_row(row) {
         var outer_tr;
 
         outer_tr = document.createElement('tr');
         outer_table.appendChild(outer_tr);
 
-        [1, 2, 3].forEach(function(bcol) {
-          var box_td, box_attr, box_table;
+        [1, 2, 3].forEach(function foreach_col(col) {
+          var td_element, cell_class_attr, cell_contents, cell_id_attr, cell_id;
 
-          box_td = document.createElement('td');
-          outer_tr.appendChild(box_td);
+          td_element = document.createElement('td');
+          outer_tr.appendChild(td_element);
 
-          var box_name = "b" + brow.toString() + bcol.toString();
+          cell_class_attr = document.createAttribute('class');
+          cell_class_attr.nodeValue = cell_class;
+          cell_id_attr = document.createAttribute('id');
+          cell_id = id_prefix + col.toString() + row.toString();
+          cell_id_attr.nodeValue = cell_id;
 
-          box_attr = document.createAttribute('id');
-          box_attr.nodeValue = box_name;
-          box_td.setAttributeNode(box_attr);
-
-          if (typeof cell_contents_fn !== undefined) {
-            box_td.appendChild(cell_contents_fn());
-
+          td_element.setAttributeNode(cell_class_attr);
+          td_element.setAttributeNode(cell_id_attr);
+          
+          if ((typeof cell_contents_fn) === "function") {
+            cell_contents = cell_contents_fn();
+            td_element.appendChild(cell_contents);
+          } else {
+            td_element.innerHTML = "8";   // TODO: remove later
           }
         });
       });
+      return outer_table;
     };
-    tab = create_tab(function() { // outer table
-      return create_tab(function() { // box
-        return create_tab(); // cell candidates
-      });
-    });
+
+    tab = create_tab('box', 'b', // outer table
+            function create_box_table() {
+              return create_tab('cell', 'c',
+                      function create_candidates_table() {
+                        return create_tab('candidate', 'n');
+                      });
+            });
     document.body.appendChild(tab);
   }());
 
