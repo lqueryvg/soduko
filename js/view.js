@@ -81,4 +81,12 @@ $(document).ready(function() {
   cell1.set_value(1);
 
   puzzle = new Sud.Puzzle();
+
+  /*
+   * Need to glue the model and view together using Aspects so that
+   * changes to the model will update the view.
+   * Things needing glue:
+   *   Candidates.remove_candidate()
+   *   Cell.set_value()
+   */
 });

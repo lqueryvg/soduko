@@ -54,19 +54,14 @@ var Sud = (function() {
 
   /*---------------------------------------------------------*/
 // Begin: Cell Object
-  pub.Cell = function(possible_values_arr, name) { // Constructor
+  pub.Cell = function(possible_values_arr) { // Constructor
     pub.Candidates.call(this, possible_values_arr);
     this.value = null; // no value yet
-    this.cell_name = name;    // TODO: not sure if name works
     this.constraint_groups = [];
   };
   pub.Cell.prototype = Object.create(pub.Candidates.prototype); // Inheritance
   pub.Cell.prototype.add_constraint_group = function(grp) {
     this.constraint_groups.push(grp);
-  };
-
-  pub.Cell.prototype.toString = function() {  // TODO: not sure if this name works
-    return this.name;
   };
 
   pub.Cell.prototype.get_value = function(new_value) {
@@ -168,9 +163,7 @@ var Sud = (function() {
       that.cells.push([]);
       that.possible_values.forEach(function(row) {
 
-        // TODO: not sure if cell name works
-        var cell = new Sud.Cell(that.possible_values,
-                "c" + col.toString() + row.toString());
+        var cell = new Sud.Cell(that.possible_values);
         that.cells[col - 1][row - 1] = cell;
         that.cols[col - 1].add_cell(cell);
         that.rows[row - 1].add_cell(cell);
