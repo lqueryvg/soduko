@@ -65,7 +65,7 @@ var Sud = (function() {
     this.constraint_groups.push(grp);
   };
 
-  pub.Cell.toString = function() {  // TODO: not sure if this name works
+  pub.Cell.prototype.toString = function() {  // TODO: not sure if this name works
     return this.name;
   };
 
@@ -145,7 +145,7 @@ var Sud = (function() {
   pub.Puzzle = function() { // Constructor
     var that = this;
     that.possible_values = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-    that.grid = [];
+    that.cells = [];
     that.cols = [];
     that.rows = [];
     that.boxes = [];
@@ -165,13 +165,13 @@ var Sud = (function() {
     });
 
     that.possible_values.forEach(function(col) {
-      that.grid.push([]);
+      that.cells.push([]);
       that.possible_values.forEach(function(row) {
 
         // TODO: not sure if cell name works
         var cell = new Sud.Cell(that.possible_values,
                 "c" + col.toString() + row.toString());
-        that.grid[col - 1][row - 1] = cell;
+        that.cells[col - 1][row - 1] = cell;
         that.cols[col - 1].add_cell(cell);
         that.rows[row - 1].add_cell(cell);
         that.get_box_group(col, row).add_cell(cell);
