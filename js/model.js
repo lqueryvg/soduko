@@ -186,7 +186,7 @@ var Sud = (function() {
   };
 
   pub.Puzzle.prototype.get_cell = function(col, row) {
-    return this.cell[col][row];
+    return this.cells[col-1][row-1];
   };
 
   return pub;
