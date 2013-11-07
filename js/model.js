@@ -185,5 +185,9 @@ var Sud = (function() {
     return this.boxes[bcol - 1][brow - 1];
   };
 
+  pub.Puzzle.prototype.get_cell = function(col, row) {
+    return this.cell[col][row];
+  };
+
   return pub;
 })();
