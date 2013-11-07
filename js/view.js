@@ -5,21 +5,14 @@
  */
 
 var Sud;
-$(document).ready(function() {
 
+var View = (function() {
   "use strict";
 
-  var aspects;
-  var cell1, cell2, cell3;
-  var grp1, grp2, aspects;
-  var puzzle;
 
-  (function() {
-    // Try with high order functions
-    var create_table;
-    var tab;
+  var create_grid = function() {
 
-    create_table = function(cell_class, id_prefix, cell_contents_fn) {
+    var create_table = function(cell_class, id_prefix, cell_contents_fn) {
       var outer_table;
 
       outer_table = document.createElement('table');
@@ -44,7 +37,7 @@ $(document).ready(function() {
 
           td_element.setAttributeNode(cell_class_attr);
           td_element.setAttributeNode(cell_id_attr);
-          
+
           if ((typeof cell_contents_fn) === "function") {
             cell_contents = cell_contents_fn();
             td_element.appendChild(cell_contents);
@@ -56,37 +49,72 @@ $(document).ready(function() {
       return outer_table;
     };
 
-    tab = create_table('box', 'b', // outer table
+    // 9 boxes, each with 9 cells, each with 9 candidates
+    // select a candidate as follows:
+    // #b22 #c13 #o32     (column followed by row)
+    // select a cell as follows:
+    // #b22 #c13
+    
+    var tab = create_table('box', 'b', // outer table
             function create_box_table() {
               return create_table('cell', 'c',
                       function create_candidates_table() {
-                        return create_table('candidate', 'n');
+                        return create_table('candidate', 'o');
                       });
             });
     document.body.appendChild(tab);
-  }());
-
-  aspects = new Aspects();
-  aspects.addBefore(function(arg) {
-    console.log("Cell.set_value(" + arg + ") called");
-  }, Sud.Cell, "set_value");
-
-  cell1 = new Sud.Cell([1, 2]);
-  cell2 = new Sud.Cell([1, 2]);
-  cell3 = new Sud.Cell([1, 2]);
-  grp1 = new Sud.ConstraintGroup([cell1, cell2]);
-  grp2 = new Sud.ConstraintGroup([cell2, cell3]);
+  };
 
 
-  cell1.set_value(1);
+  var test_some_stuff = function() {
 
-  puzzle = new Sud.Puzzle();
+    var aspects;
+    var cell1, cell2, cell3;
+    var grp1, grp2, aspects;
 
-  /*
-   * Need to glue the model and view together using Aspects so that
-   * changes to the model will update the view.
-   * Things needing glue:
-   *   Candidates.remove_candidate()
-   *   Cell.set_value()
-   */
-});
+    aspects = new Aspects();
+
+    aspects.addBefore(function(arg) {
+      console.log(this.name + ".set_value(" + arg + ") called");
+    }, Sud.Cell, "set_value");
+
+    cell1 = new Sud.Cell([1, 2]);
+    cell1.name = "cell1";
+    cell2 = new Sud.Cell([1, 2]);
+    cell2.name = "cell2";
+    cell3 = new Sud.Cell([1, 2]);
+    cell3.name = "cell3";
+
+    grp1 = new Sud.ConstraintGroup([cell1, cell2]);
+    grp2 = new Sud.ConstraintGroup([cell2, cell3]);
+
+
+    cell1.set_value(1);
+  };
+
+  var visual_glue = function() {
+    var aspects;
+    var puzzle = new Sud.Puzzle();
+
+    /*
+     * Need to glue the model and view together using Aspects so that
+     * changes to the model will update the view.
+     * Things needing glue:
+     *   Candidates.remove_candidate()
+     *   Cell.set_value()
+     */
+    aspects = new Aspects();
+    //aspects.addBefore(function(new_value) {)
+    //}, 
+
+  };
+
+  $(document).ready(function() {
+
+    test_some_stuff();
+    create_grid();
+    visual_glue();
+  });
+
+
+})();
