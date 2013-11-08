@@ -8,7 +8,7 @@ var Sud;
 
 var View = (function() {
   "use strict";
-
+  var element_map = {};
 
   var create_grid = function() {
 
@@ -39,10 +39,12 @@ var View = (function() {
           td_element.setAttributeNode(cell_id_attr);
 
           if ((typeof cell_contents_fn) === "function") {
-            cell_contents = cell_contents_fn();
-            td_element.appendChild(cell_contents);
-          } else {
-            td_element.innerHTML = "8";   // TODO: remove later
+            cell_contents = cell_contents_fn('#' + cell_id);
+            if (typeof(cell_contents) === "string") {
+              td_element.innerHTML = cell_contents;
+            } else {
+              td_element.appendChild(cell_contents);
+            }
           }
         });
       });
@@ -54,17 +56,20 @@ var View = (function() {
     // #b22 #c13 #o32     (column followed by row)
     // select a cell as follows:
     // #b22 #c13
-    
+
     var tab = create_table('box', 'b', // outer table
-            function create_box_table() {
+            function create_box_table(box_css_selector) {
+              console.log(box_css_selector);
               return create_table('cell', 'c',
-                      function create_candidates_table() {
-                        return create_table('candidate', 'o');
+                      function create_candidates_table(cell_css_selector) {
+                        return create_table('candidate', 'o',
+                                function create_empty_cand(cand_css_selector) {
+                                  return '8';   // TODO: remove later
+                                });
                       });
             });
     document.body.appendChild(tab);
   };
-
 
   var test_some_stuff = function() {
 
@@ -104,9 +109,14 @@ var View = (function() {
      *   Cell.set_value()
      */
     aspects = new Aspects();
-    //aspects.addBefore(function(new_value) {)
-    //}, 
 
+    // Glue the cells.
+    // Need a lookup table which maps cell names to their CSS selectors.
+    aspects.addBefore(function(new_value) {
+      console.log("cell " + this.toString() + " changed");
+
+    }, Sud.Cell, "set_value");
+    puzzle.get_cell(1, 1).set_value(1);
   };
 
   $(document).ready(function() {
@@ -115,6 +125,4 @@ var View = (function() {
     create_grid();
     visual_glue();
   });
-
-
 })();
