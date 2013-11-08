@@ -68,6 +68,10 @@ var Sud = (function() {
     return this.value;
   };
 
+  pub.Cell.prototype.toString = function() {
+    return this.name;
+  };
+
   pub.Cell.prototype.remove_candidate = function(value) {
     pub.Candidates.prototype.remove_candidate.call(this, value);
 
@@ -164,6 +168,7 @@ var Sud = (function() {
       that.possible_values.forEach(function(row) {
 
         var cell = new Sud.Cell(that.possible_values);
+        cell.name = "c" + col.toString() + row.toString();
         that.cells[col - 1][row - 1] = cell;
         that.cols[col - 1].add_cell(cell);
         that.rows[row - 1].add_cell(cell);
@@ -171,6 +176,10 @@ var Sud = (function() {
       });
     });
   };  // Puzzle
+
+  pub.Puzzle.prototype.get_possible_values = function() {
+    return this.possible_values;
+  };
 
   pub.Puzzle.prototype.coord_to_box = function(cell_i) {
     // cell_i is a row or column number of a cell
