@@ -8,7 +8,18 @@ var Sud;
 
 var View = (function() {
   "use strict";
-  var element_map = {};
+  var cell_element_map = {};
+  var candidate_selector_map = {
+    1: '#o11',
+    2: '#o21',
+    3: '#o31',
+    4: '#o12',
+    5: '#o22',
+    6: '#o32',
+    7: '#o13',
+    8: '#o23',
+    9: '#o33'
+  };
   var create_grid = function() {
 
     var create_table = function(cell_class, id_prefix, cell_contents_fn) {
@@ -93,26 +104,37 @@ var View = (function() {
     aspects = new Aspects();
     // Glue the cells.
     aspects.addBefore(function(new_value) {
-      var css_selector = element_map[this.toString()];
+      var cell_selector = cell_element_map[this.toString()];
 
       console.log('cell ' + this.toString() + ' changed');
-      console.log('selector = ' + css_selector);
-      $(css_selector).html(new_value);
+      console.log('selector = ' + cell_selector);
+      $(cell_selector).html(new_value);
     }, Sud.Cell, 'set_value');
 
+    aspects.addBefore(function(candidate_value) {
+      var cell_selector = cell_element_map[this.toString()];
+      var cand_selector;
+      console.log('cell ' + this.toString() +
+              ' remove_candidate(' + candidate_value + ')');
+      cand_selector = cell_selector + ' ' +
+              candidate_selector_map[candidate_value];
+
+      console.log('selector = ' + cand_selector);
+      $(cand_selector).html('');
+    }, Sud.Cell, 'remove_candidate');
 
     // Lookup table which maps cell names to their CSS selectors.
     puzzle.get_possible_values().forEach(function(col) {
       puzzle.get_possible_values().forEach(function(row) {
         var cell = puzzle.get_cell(col, row);
         var cell_name = cell.toString();
-        var box_col = Math.floor((col-1)/3) + 1;
-        var box_row = Math.floor((row-1)/3) + 1;
+        var box_col = Math.floor((col - 1) / 3) + 1;
+        var box_row = Math.floor((row - 1) / 3) + 1;
         var box_selector = '#b' + box_col.toString() + box_row.toString();
         var cell_col = 1 + ((col - 1) % 3);
         var cell_row = 1 + ((row - 1) % 3);
         var cell_selector = '#c' + cell_col.toString() + cell_row.toString();
-        element_map[cell_name] = box_selector + ' ' + cell_selector;
+        cell_element_map[cell_name] = box_selector + ' ' + cell_selector;
       });
     });
 
