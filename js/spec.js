@@ -107,3 +107,26 @@ describe("Candidate tests", function() {
   });
 
 });
+
+describe("Puzzle tests", function() {
+  var puzzle;
+  beforeEach(function() {
+    puzzle = new Sud.Puzzle();
+  });
+  it("set_value/get_value", function() {
+    puzzle.get_cell(1,2).set_value(3);
+    expect(puzzle.get_cell(1,2).get_value()).toBe(3);
+  });
+  it("value_is_a_candidate column", function() {
+    puzzle.get_cell(1,2).set_value(3);
+    expect(puzzle.get_cell(1,9).value_is_a_candidate(3)).toBe(false);
+  });
+  it("value_is_a_candidate row", function() {
+    puzzle.get_cell(1,2).set_value(3);
+    expect(puzzle.get_cell(9,2).value_is_a_candidate(3)).toBe(false);
+  });
+  it("value_is_a_candidate box", function() {
+    puzzle.get_cell(1,2).set_value(3);
+    expect(puzzle.get_cell(3,3).value_is_a_candidate(3)).toBe(false);
+  });
+});

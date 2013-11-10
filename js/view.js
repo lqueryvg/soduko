@@ -102,7 +102,8 @@ var View = (function() {
      *   Cell.set_value()
      */
     aspects = new Aspects();
-    // Glue the cells.
+
+    // Cell glue.
     aspects.addBefore(function(new_value) {
       var cell_selector = cell_element_map[this.toString()];
 
@@ -111,19 +112,22 @@ var View = (function() {
       $(cell_selector).html(new_value);
     }, Sud.Cell, 'set_value');
 
+    // Candidate glue.
     aspects.addBefore(function(candidate_value) {
       var cell_selector = cell_element_map[this.toString()];
-      var cand_selector;
-      console.log('cell ' + this.toString() +
-              ' remove_candidate(' + candidate_value + ')');
-      cand_selector = cell_selector + ' ' +
+      var cand_selector = cell_selector + ' ' +
               candidate_selector_map[candidate_value];
+      //console.log('cell ' + this.toString() +
+             //' remove_candidate(' + candidate_value + ')');
 
-      console.log('selector = ' + cand_selector);
-      $(cand_selector).html('');
+      //console.log('selector = ' + cand_selector);
+
+      //$(cand_selector).html('');
+      //$(cand_selector).hide();
+      $(cand_selector).animate({opacity: '0'}, 'slow');
     }, Sud.Cell, 'remove_candidate');
 
-    // Lookup table which maps cell names to their CSS selectors.
+    // Create lookup table mapping cell names to CSS selectors.
     puzzle.get_possible_values().forEach(function(col) {
       puzzle.get_possible_values().forEach(function(row) {
         var cell = puzzle.get_cell(col, row);
@@ -138,16 +142,16 @@ var View = (function() {
       });
     });
 
-    puzzle.get_cell(5, 8).set_value(7);
-    puzzle.get_cell(8, 2).set_value(1);
-    puzzle.get_cell(6, 3).set_value(2);
-    puzzle.get_cell(1, 9).set_value(5);
+    puzzle.get_cell(1, 1).set_value(7);
+    //puzzle.get_cell(8, 2).set_value(1);
+    //puzzle.get_cell(6, 3).set_value(2);
+    //puzzle.get_cell(1, 9).set_value(5);
 
   };
 
   $(document).ready(function() {
 
-    test_some_stuff();
+    //test_some_stuff();
     create_grid();
     visual_glue();
   });

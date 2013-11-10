@@ -181,16 +181,17 @@ var Sud = (function() {
     return this.possible_values;
   };
 
-  pub.Puzzle.prototype.coord_to_box = function(cell_i) {
+  pub.Puzzle.prototype.get_box_coord_from_cell_coord = function(cell_i) {
     // cell_i is a row or column number of a cell
-    return((cell_i - 1) % 3 + 1);
+    return(Math.floor((cell_i - 1) / 3) + 1);
   };
 
   pub.Puzzle.prototype.get_box_group = function(col, row) {
     var bcol, brow;
 
-    bcol = this.coord_to_box(col);
-    brow = this.coord_to_box(row);
+    bcol = this.get_box_coord_from_cell_coord(col);
+    brow = this.get_box_coord_from_cell_coord(row);
+    console.log("col,row = bcol,brow => " + col + "," + row + " = " + bcol + "," + brow);
     return this.boxes[bcol - 1][brow - 1];
   };
 
