@@ -191,7 +191,8 @@ var Sud = (function() {
 
     bcol = this.get_box_coord_from_cell_coord(col);
     brow = this.get_box_coord_from_cell_coord(row);
-    console.log("col,row = bcol,brow => " + col + "," + row + " = " + bcol + "," + brow);
+    console.log("col,row = bcol,brow => " + col + "," + row
+    							+ " = " + bcol + "," + brow);
     return this.boxes[bcol - 1][brow - 1];
   };
 
