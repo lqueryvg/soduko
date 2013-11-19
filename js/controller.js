@@ -32,8 +32,8 @@ var Controller = (function() {"use strict";
 
 var PriorityQueue = (function() {
   var queue = [];       // array of arrays
-                        // Index of outer array is the priority.
-                        // Inner lists are lists of queue items.
+                        // Index is the priority.
+                        // Inner lists are items.
 
   // public functions
 
