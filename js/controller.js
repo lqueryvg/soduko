@@ -29,3 +29,34 @@ var Controller = (function() {"use strict";
 
 	return pub;
 })();
+
+var PriorityQueue = (function() {
+  var queue = [];       // array of arrays
+                        // Index of outer array is the priority.
+                        // Inner lists are lists of queue items.
+
+  // public functions
+
+  var _ensure_sublist_exists = function(pri) {
+    if (!_.isArray(queue[pri])) {
+      queue[pri] = [];
+    }
+  };
+
+  return {
+    get_next_item: function() {    // get first elt of first none empty list
+      function not_empty(list) {
+        return !_.isEmpty(list);
+      }
+      var first_none_empty_list = _.find(queue, not_empty(sublist));
+      return _.first(first_none_empty_list);
+    },
+    add_item: function(priority, item) {
+      _ensure_sublist_exists(priority);
+      queue[priority].push(item);
+    },
+    replace_items: function(pri, items) {
+      queue[priority] = items;
+    }
+  }
+}());
