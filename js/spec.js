@@ -1,6 +1,34 @@
 
 //--- SPECS -------------------------
 
+describe("PriorityQueue tests", function() {
+  it("PriorityQueue.get_next_item().toBeUndefined()", function() {
+    expect(PriorityQueue.get_next_item()).toBeUndefined();
+  });
+
+  it("PriorityQueue.get_next_item().toBe(\"zero\")", function() {
+    PriorityQueue.add_item(0,"zero");
+    expect(PriorityQueue.get_next_item()).toBe("zero");
+  });
+
+  it("get_next_item() removes items in correct order", function() {
+    PriorityQueue.add_item(0,"zero");
+    PriorityQueue.add_item(2,"one");
+    PriorityQueue.add_item(2,"two");
+    PriorityQueue.add_item(1,"three");
+    expect(PriorityQueue.get_next_item()).toBe("zero");
+    expect(PriorityQueue.get_next_item()).toBe("three");
+    expect(PriorityQueue.get_next_item()).toBe("one");
+    expect(PriorityQueue.get_next_item()).toBe("two");
+  });
+  it("replace_items()", function() {
+    PriorityQueue.add_item(0,"zero");
+    PriorityQueue.add_item(0,"one");
+    PriorityQueue.replace_items(0,[]);
+    expect(PriorityQueue.get_next_item()).toBeUndefined();
+  });
+});
+
 describe("Candidates tests", function() {
   var cand;
 
