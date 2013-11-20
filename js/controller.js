@@ -1,4 +1,5 @@
-var Controller = (function() {"use strict";
+var Controller = (function() {
+  "use strict";
 
 	var pub = {};
 	// public interface
@@ -31,6 +32,7 @@ var Controller = (function() {"use strict";
 })();
 
 var PriorityQueue = (function() {
+  "use strict";
   var queue = [];       // array of arrays
                         // Index is the priority.
                         // Inner lists are items.
@@ -48,15 +50,19 @@ var PriorityQueue = (function() {
       function not_empty(list) {
         return !_.isEmpty(list);
       }
-      var first_none_empty_list = _.find(queue, not_empty(sublist));
-      return _.first(first_none_empty_list);
+      var first_none_empty_list = _.find(queue, not_empty);
+      if (_.isArray(first_none_empty_list)) {
+        return first_none_empty_list.shift();
+      } else {
+        return undefined;
+      }
     },
     add_item: function(priority, item) {
       _ensure_sublist_exists(priority);
       queue[priority].push(item);
     },
     replace_items: function(pri, items) {
-      queue[priority] = items;
+      queue[pri] = items;
     }
-  }
+  };
 }());

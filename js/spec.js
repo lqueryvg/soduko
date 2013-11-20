@@ -1,12 +1,6 @@
 
 //--- SPECS -------------------------
 
-describe("PriorityQueue tests", function() {
-  it("PriorityQueue.get_next_item().toBe(null)", function() {
-    expect(PriorityQueue.get_next_item()).toBeUndefined();
-  });
-});
-
 describe("Candidates tests", function() {
   var cand;
 

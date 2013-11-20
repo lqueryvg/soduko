@@ -76,7 +76,7 @@ var Sud = (function() {
     pub.Candidates.prototype.remove_candidate.call(this, value);
 
     // Technique #2: Single Candidate
-    // When there is only one remaining possible candidate for this cell set
+    // When there is only one remaining candidate for this cell set
     // the cell's value.
     if (this.num_candidates === 1) {
       var only_possible_value = this.get_only_remaining_candidate();
