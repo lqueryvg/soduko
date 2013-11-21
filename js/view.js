@@ -6,8 +6,10 @@
 
 var Sud;
 
-var View = (function() {
+//var View = (function() {
+(function( global ) {
   "use strict";
+  var View = (function() {
   var cell_element_map = {};
   var candidate_selector_map = {
     1: '#o11',
@@ -155,4 +157,7 @@ var View = (function() {
     create_grid();
     visual_glue();
   });
-})();
+  })();
+  global.View = View;
+//})();
+})(this);
