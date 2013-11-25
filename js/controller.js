@@ -57,7 +57,7 @@ var PriorityQueue = (function() {
         return undefined;
       }
     },
-    add_item: function(priority, item) {
+    append_item: function(priority, item) {
       _ensure_sublist_exists(priority);
       queue[priority].push(item);
     },
