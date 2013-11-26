@@ -50,10 +50,10 @@ var Sud = (function() {
   pub.Candidates.prototype.value_is_a_candidate = function(value) {
     return this.possible_values.hasOwnProperty(value);
   };
-// End: Candidates Object
+  // End: Candidates Object
 
   /*---------------------------------------------------------*/
-// Begin: Cell Object
+  // Begin: Cell Object
   pub.Cell = function(possible_values_arr) { // Constructor
     pub.Candidates.call(this, possible_values_arr);
     this.value = null; // no value yet
@@ -88,9 +88,9 @@ var Sud = (function() {
     var that = this;
     // TODO: use Aspects for these assertions
     assert(this.value === null,
-            "attempt to set cell value after already set");
+        "attempt to set cell value after already set");
     assert(this.value_is_a_candidate(new_value),
-            "attempt to set cell to a value which is not a candidate");
+        "attempt to set cell to a value which is not a candidate");
     this.value = new_value;
     this.remove_all_candidates();
     var grps = this.constraint_groups;
@@ -137,7 +137,7 @@ var Sud = (function() {
     // that cell's value must be that candidate.
 
   };
-// End: ConstraintGroup
+  // End: ConstraintGroup
 
   /*---------------------------------------------------------*/
 
@@ -191,8 +191,8 @@ var Sud = (function() {
 
     bcol = this.get_box_coord_from_cell_coord(col);
     brow = this.get_box_coord_from_cell_coord(row);
-    console.log("col,row = bcol,brow => " + col + "," + row
-    							+ " = " + bcol + "," + brow);
+    console.log("col,row = bcol,brow => " + col + "," + row +
+        " = " + bcol + "," + brow);
     return this.boxes[bcol - 1][brow - 1];
   };
 
@@ -200,5 +200,64 @@ var Sud = (function() {
     return this.cells[col-1][row-1];
   };
 
-  return pub;
 })();
+
+var Solver = (function() {
+  "use strict";
+  var puzz;
+  var q = PriorityQueue;   // just a shortcut
+  var coords = [0,1,2,3,4,5,6,7,8];   // TODO need a better way
+
+  var Pri = { // TODO fix these priorities
+    FINISHED:                  0,
+    SET_CELL_VALUE:            1,
+    DEL_ONE_GROUP_CANDS:       2,
+    DEL_CELL_CAND:             3,
+    DEL_ALL_CELL_GROUP_CANDS:  4,
+    SCAN_ALL_FOR_VALUES:       5,
+  };
+
+  // public functions
+
+  return {
+    solve: function(puzzle) {
+      puzz = puzzle;
+      q.push(Pri.SCAN, this.scan);
+    },
+    remove_constraint_group_candidates: function(grp, cell) {
+    },
+    remove_candidates_around_cell: function(cell) {
+      // TODO
+      // foreach constraint group of cell...
+      // q.push(
+      //   for each cell in constraint group not this cell
+      //     q.push(2, cell.delete_candidate(value));
+
+    },
+    scan: function() {  // scan entire puzzle looking for cells already set
+      _.each(coords, function(x) {
+        _.each(coords, function(y) {
+          var val = puzz.get_cell_value(x,y);
+          if (val !== undefined) {
+            this.remove_candidates_around(x,y,value);   // TODO where is this implemented?
+          }
+        });
+      });
+    },
+    delete_candidate: function(x, y, candidate_value) {
+      // TODO
+      // *P2*
+      // delete candidate
+      // if only one candidate remains, queue up set_value()
+      //
+    },
+    set_value: function(x, y, value) {
+      // TODO
+      // *P1*
+      // set the cell value
+      // if puzzle solved, queue finish function *P0*
+      // queue up row/column delete candidates
+      // (lower priority than set_value())
+    }
+  };
+}());
