@@ -78,10 +78,12 @@ var Sud = (function() {
     // Technique #2: Single Candidate
     // When there is only one remaining candidate for this cell set
     // the cell's value.
+    /*
     if (this.num_candidates === 1) {
       var only_possible_value = this.get_only_remaining_candidate();
       this.set_value(only_possible_value);  // Recursion !!!
     }
+    */
   };
 
   pub.Cell.prototype.set_value = function(new_value) {
@@ -93,10 +95,12 @@ var Sud = (function() {
         "attempt to set cell to a value which is not a candidate");
     this.value = new_value;
     this.remove_all_candidates();
+    /*
     var grps = this.constraint_groups;
     grps.forEach(function(grp) {
       grp.cell_changed(that, new_value);
     });
+    */
   };
   // End: Cell Object
 
@@ -200,7 +204,9 @@ var Sud = (function() {
     return this.cells[col-1][row-1];
   };
 
-})();
+  return pub;
+
+}());
 
 var Solver = (function() {
   "use strict";
@@ -209,55 +215,80 @@ var Solver = (function() {
   var coords = [0,1,2,3,4,5,6,7,8];   // TODO need a better way
 
   var Pri = { // TODO fix these priorities
-    FINISHED:                  0,
-    SET_CELL_VALUE:            1,
-    DEL_ONE_GROUP_CANDS:       2,
-    DEL_CELL_CAND:             3,
-    DEL_ALL_CELL_GROUP_CANDS:  4,
-    SCAN_ALL_FOR_VALUES:       5,
+    FINISHED:                         0,
+    SET_CELL_VALUE:                   1,
+    REMOVE_SINGLE_GROUP_CANDIDATES:   2,
+    REMOVE_CELL_CANDIDATE:            3,
+    SCAN_ALL_FOR_VALUES:              5,
   };
 
-  // public functions
+  // private solver methods
 
-  return {
-    solve: function(puzzle) {
-      puzz = puzzle;
-      q.push(Pri.SCAN, this.scan);
+  var pf = {  // private funcs
+    finished: function() {
+      // TODO how to detect
+      console.log("finished");
     },
-    remove_constraint_group_candidates: function(grp, cell) {
-    },
-    remove_candidates_around_cell: function(cell) {
-      // TODO
-      // foreach constraint group of cell...
-      // q.push(
-      //   for each cell in constraint group not this cell
-      //     q.push(2, cell.delete_candidate(value));
 
+    remove_single_group_candidates: function(group, value) {
+      // Remove value from candidates in a constraint group.
+
+      _.each(group.cells, function(cell) {
+        q.push(Pri.REMOVE_CELL_CANDIDATE, function() {
+          remove_cell_candidate(cell, value);
+          // NOTE we rely on remove_cell_candidate() being able to cope if
+          // candidate has already been deleted or if cell value already set.
+        });
+      });
     },
-    scan: function() {  // scan entire puzzle looking for cells already set
+
+    remove_all_cell_group_candidates: function(cell, value) {
+      // Remove value from candidates of the cell's row, column and box.
+      _.each(cell.constraint_groups, function() {
+        q.push(Pri.REMOVE_SINGLE_GROUP_CANDIDATES, function() {
+          remove_single_group_candidates(group, value);
+          // TODO: remove cell from group
+        });
+      });
+    },
+
+    scan_puzzle_for_values: function(puzzle) {
+      // in case cell values have been set without
+      // any candidates being eliminated
       _.each(coords, function(x) {
         _.each(coords, function(y) {
-          var val = puzz.get_cell_value(x,y);
-          if (val !== undefined) {
-            this.remove_candidates_around(x,y,value);   // TODO where is this implemented?
+          var cell = puzzle.get_cell(x,y);
+          if (cell.get_value() !== undefined) {
+            remove_all_cell_group_candidates(cell, cell.value);
           }
         });
       });
     },
-    delete_candidate: function(x, y, candidate_value) {
-      // TODO
-      // *P2*
-      // delete candidate
+
+    remove_cell_candidate: function(cell, value) {
+      // remove candidate value from a single cell
       // if only one candidate remains, queue up set_value()
       //
+      cell.remove_candidate(cell, value);
+      if (cell.count_candidates() == 1) {
+        q.push(Pri.SET_CELL_VALUE, function() {
+          set_cell_value(cell, cell.get_only_remaining_candidate());
+        });
+      }
     },
-    set_value: function(x, y, value) {
-      // TODO
-      // *P1*
-      // set the cell value
-      // if puzzle solved, queue finish function *P0*
-      // queue up row/column delete candidates
-      // (lower priority than set_value())
+    set_cell_value: function(cell, value) {
+      cell.set_value(value);
+      remove_all_cell_group_candidates(cell, value);
     }
   };
+  
+  // public methods
+  return {
+    solve: function(puzzle) {
+      q.push(Pri.SCAN_PUZZLE_FOR_VALUES, function() {
+        this.scan_puzzle_for_values(puzzle);
+      });
+    }
+  };
+  
 }());
