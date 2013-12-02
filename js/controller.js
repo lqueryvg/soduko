@@ -17,15 +17,15 @@ var Controller = (function() {
 		if ( typeof milliseconds !== "undefined") {
 			interval = milliseconds;
 		} else {
-			interval = 250;
+			interval = 500;
 		}
 
 		console.log("do_next_event() called");
 		var event_fn = event_queue.shift();
 		if ( typeof event_fn === "function") {
 			event_fn();
+		  window.setTimeout(do_next_event, interval);
 		}
-		window.setTimeout(do_next_event, interval);
 	};
 
 	return pub;
