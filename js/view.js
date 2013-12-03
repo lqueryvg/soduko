@@ -150,9 +150,9 @@
       //puzzle.get_cell(8, 2).set_value(1);
       //puzzle.get_cell(6, 3).set_value(2);
       //puzzle.get_cell(1, 9).set_value(5);
-      Controller.do_next_event(500);
-      var solver = new Solver(puzzle);
-      solver.solve();
+      var q = new Controller.PriorityQueue();
+      Solver.solve(puzzle, q);
+      Controller.do_next_event(q, 500);
     };
 
     $(document).ready(function() {

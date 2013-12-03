@@ -211,15 +211,15 @@ var Sud = (function() {
 var Solver = (function() {
   "use strict";
   var puzz;
-  var q = PriorityQueue;   // just a shortcut
-  var coords = [0,1,2,3,4,5,6,7,8];   // TODO need a better way
+  var q;   // just a shortcut
+  var coords = [1,2,3,4,5,6,7,8,9];   // TODO need a better way
 
   var Pri = { // TODO fix these priorities
     FINISHED:                         0,
     SET_CELL_VALUE:                   1,
     REMOVE_SINGLE_GROUP_CANDIDATES:   2,
     REMOVE_CELL_CANDIDATE:            3,
-    SCAN_ALL_FOR_VALUES:              5,
+    SCAN_PUZZLE_FOR_VALUES:           5,
   };
 
   // private solver methods
@@ -234,8 +234,8 @@ var Solver = (function() {
       // Remove value from candidates in a constraint group.
 
       _.each(group.cells, function(cell) {
-        q.push(Pri.REMOVE_CELL_CANDIDATE, function() {
-          remove_cell_candidate(cell, value);
+        q.append_item(Pri.REMOVE_CELL_CANDIDATE, function() {
+          pf.remove_cell_candidate(cell, value);
           // NOTE we rely on remove_cell_candidate() being able to cope if
           // candidate has already been deleted or if cell value already set.
         });
@@ -244,9 +244,10 @@ var Solver = (function() {
 
     remove_all_cell_group_candidates: function(cell, value) {
       // Remove value from candidates of the cell's row, column and box.
-      _.each(cell.constraint_groups, function() {
-        q.push(Pri.REMOVE_SINGLE_GROUP_CANDIDATES, function() {
-          remove_single_group_candidates(group, value);
+      _.each(cell.constraint_groups, function(group) {
+        console.log("q REMOVE_SINGLE_GROUP_CANDIDATES " + cell)
+        q.append_item(Pri.REMOVE_SINGLE_GROUP_CANDIDATES, function() {
+          pf.remove_single_group_candidates(group, value);
           // TODO: remove cell from group
         });
       });
@@ -258,8 +259,9 @@ var Solver = (function() {
       _.each(coords, function(x) {
         _.each(coords, function(y) {
           var cell = puzzle.get_cell(x,y);
-          if (cell.get_value() !== undefined) {
-            remove_all_cell_group_candidates(cell, cell.value);
+          if (cell.get_value() !== null) {
+            console.log("call pf.remove_all_cell_group_candidates(" + cell + ", " + cell.value + ")");
+            pf.remove_all_cell_group_candidates(cell, cell.value);
           }
         });
       });
@@ -269,10 +271,11 @@ var Solver = (function() {
       // remove candidate value from a single cell
       // if only one candidate remains, queue up set_value()
       //
+      console.log("cell.remove_candidate(" + cell + ", " + value + ")");
       cell.remove_candidate(cell, value);
-      if (cell.count_candidates() == 1) {
-        q.push(Pri.SET_CELL_VALUE, function() {
-          set_cell_value(cell, cell.get_only_remaining_candidate());
+      if (cell.count_candidates() === 1) {
+        q.append_item(Pri.SET_CELL_VALUE, function() {
+          pf.set_cell_value(cell, cell.get_only_remaining_candidate());
         });
       }
     },
@@ -284,9 +287,11 @@ var Solver = (function() {
   
   // public methods
   return {
-    solve: function(puzzle) {
-      q.push(Pri.SCAN_PUZZLE_FOR_VALUES, function() {
-        this.scan_puzzle_for_values(puzzle);
+    solve: function(puzzle, queue) {
+      q = queue;
+      puzz = puzzle;
+      q.append_item(Pri.SCAN_PUZZLE_FOR_VALUES, function() {
+        pf.scan_puzzle_for_values(puzz);
       });
     }
   };
