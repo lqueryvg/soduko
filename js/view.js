@@ -95,9 +95,9 @@
       cell1.set_value(1);
     };
 
-    var visual_glue = function() {
+    var visual_glue = function(puzzle) {
       var aspects;
-      var puzzle = new Sud.Puzzle();
+
       /*
        * Need to glue the model and view together using Aspects so that
        * changes to the model will update the view.
@@ -117,7 +117,7 @@
       }, Sud.Cell, 'set_value');
 
       // Candidate glue.
-      aspects.addBefore(function(candidate_value) {
+      aspects.addBefore(function(cell, candidate_value) {
         var cell_selector = cell_element_map[this.toString()];
         var cand_selector = cell_selector + ' ' +
           candidate_selector_map[candidate_value];
@@ -147,19 +147,20 @@
       });
 
       puzzle.get_cell(1, 1).set_value(7);
-      //puzzle.get_cell(8, 2).set_value(1);
-      //puzzle.get_cell(6, 3).set_value(2);
-      //puzzle.get_cell(1, 9).set_value(5);
-      var q = new Controller.PriorityQueue();
-      Solver.solve(puzzle, q);
-      Controller.do_next_event(q, 500);
+      puzzle.get_cell(8, 2).set_value(1);
+      puzzle.get_cell(6, 3).set_value(2);
+      puzzle.get_cell(1, 9).set_value(5);
     };
 
     $(document).ready(function() {
 
       //test_some_stuff();
       create_grid();
-      visual_glue();
+      var puzzle = new Sud.Puzzle();
+      visual_glue(puzzle);
+      var q = new Controller.PriorityQueue();
+      Solver.solve(puzzle, q);
+      Controller.do_next_event(q, 500);
     });
   })();
   global.View = View;
