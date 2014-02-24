@@ -2,25 +2,20 @@
 
 **some techniques**
 
-single_position
-  // only one cell in a group where a particular candidate value can occur
-  for each group
-    for each value
-      found if only one cell in group has candidate value
+*single_position*
+occurs when there can be only one cell in a group where a particular candidate value can occur
 
-single_candidate
-  // only 1 candidate remaining in a cell
+    for each group
+      for each value
+        found if only one cell in group has candidate value
 
-candidate_line
-  // candidates for a value in a box lie on a line
-  // therefore same value candidates on same line in other boxes can be deleted
+*single_candidate*
+occurs when there is only 1 candidate remaining in a cell
 
-double_pairs
-  // a candidate value can only be in 2 cells in each of two boxes,
-  // and the 4 cells form corners of a rectangle
-  // therefore:
-  // the two boxes must be in the same row/column, so the candidate value
-  // can be deleted from the remaining box in that row/column
+*candidate_line*
+occurs when the only candidates for a particular value in a box lie on a line, therefore the same value candidates on same line in other boxes can be eliminated
+
+*double_pairs* occurs when a candidate value can only be in 2 cells in each of two boxes, and the 4 cells form corners of a rectangle. Therefore the two boxes must be in the same row/column, so the candidate value can be deleted from the remaining box in that row/column.
 
 **underscore.js wrap() instead of Aspects**
 
