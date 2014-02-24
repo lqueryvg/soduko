@@ -231,7 +231,7 @@ var Solver = (function() {
     },
 
     remove_single_group_candidates: function(group, value) {
-      // Remove value from candidates in a constraint group.
+      // Remove value from candidates in a single constraint group.
 
       _.each(group.cells, function(cell) {
         q.append_item(Pri.REMOVE_CELL_CANDIDATE, function() {
