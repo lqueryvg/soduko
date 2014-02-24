@@ -4,9 +4,6 @@
  * and open the template in the editor.
  */
 
-//var Sud;
-
-//var View = (function() {
 (function( global ) {
   "use strict";
   var View = (function() {
@@ -22,7 +19,8 @@
       8: '#o23',
       9: '#o33'
     };
-    var create_grid = function() {
+    
+    var create_html_grid = function() {
 
       var create_table = function(cell_class, id_prefix, cell_contents_fn) {
         var outer_table;
@@ -75,26 +73,6 @@
                              document.body.appendChild(tab);
     };
 
-    var test_some_stuff = function() {
-
-      var aspects;
-      var cell1, cell2, cell3;
-      var grp1, grp2, aspects;
-      aspects = new Aspects();
-      aspects.addBefore(function(arg) {
-        console.log(this.name + ".set_value(" + arg + ") called");
-      }, Sud.Cell, "set_value");
-      cell1 = new Sud.Cell([1, 2]);
-      cell1.name = "cell1";
-      cell2 = new Sud.Cell([1, 2]);
-      cell2.name = "cell2";
-      cell3 = new Sud.Cell([1, 2]);
-      cell3.name = "cell3";
-      grp1 = new Sud.ConstraintGroup([cell1, cell2]);
-      grp2 = new Sud.ConstraintGroup([cell2, cell3]);
-      cell1.set_value(1);
-    };
-
     var visual_glue = function(puzzle) {
       var aspects;
 
@@ -121,13 +99,8 @@
         var cell_selector = cell_element_map[this.toString()];
         var cand_selector = cell_selector + ' ' +
           candidate_selector_map[candidate_value];
-        //console.log('cell ' + this.toString() +
-        //' remove_candidate(' + candidate_value + ')');
 
-        //console.log('selector = ' + cand_selector);
-
-        //$(cand_selector).html('');
-        //$(cand_selector).hide();
+        $(cand_selector).css('background-color', 'pink');
         $(cand_selector).animate({opacity: '0'}, 'slow');
       }, Sud.Cell, 'remove_candidate');
 
@@ -153,16 +126,13 @@
     };
 
     $(document).ready(function() {
-
-      //test_some_stuff();
-      create_grid();
+      create_html_grid();
       var puzzle = new Sud.Puzzle();
       visual_glue(puzzle);
       var q = new Controller.PriorityQueue();
       Solver.solve(puzzle, q);
-      Controller.do_next_event(q, 500);
+      Controller.do_next_event(q, 200);
     });
   })();
   global.View = View;
-  //})();
 })(this);
