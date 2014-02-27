@@ -64,7 +64,7 @@ var Sud = (function() {
     this.constraint_groups.push(grp);
   };
 
-  pub.Cell.prototype.get_value = function(new_value) {
+  pub.Cell.prototype.get_value = function() {
     return this.value;
   };
 
@@ -79,28 +79,28 @@ var Sud = (function() {
     // When there is only one remaining candidate for this cell set
     // the cell's value.
     /*
-    if (this.num_candidates === 1) {
-      var only_possible_value = this.get_only_remaining_candidate();
-      this.set_value(only_possible_value);  // Recursion !!!
-    }
-    */
+     if (this.num_candidates === 1) {
+     var only_possible_value = this.get_only_remaining_candidate();
+     this.set_value(only_possible_value);  // Recursion !!!
+     }
+     */
   };
 
   pub.Cell.prototype.set_value = function(new_value) {
     var that = this;
     // TODO: use Aspects for these assertions
     assert(this.value === null,
-        "attempt to set cell value after already set");
+            "attempt to set cell value after already set");
     assert(this.value_is_a_candidate(new_value),
-        "attempt to set cell to a value which is not a candidate");
+            "attempt to set cell to a value which is not a candidate");
     this.value = new_value;
     this.remove_all_candidates();
     /*
-    var grps = this.constraint_groups;
-    grps.forEach(function(grp) {
-      grp.cell_changed(that, new_value);
-    });
-    */
+     var grps = this.constraint_groups;
+     grps.forEach(function(grp) {
+     grp.cell_changed(that, new_value);
+     });
+     */
   };
   // End: Cell Object
 
@@ -195,13 +195,13 @@ var Sud = (function() {
 
     bcol = this.get_box_coord_from_cell_coord(col);
     brow = this.get_box_coord_from_cell_coord(row);
-    console.log("col,row = bcol,brow => " + col + "," + row +
-        " = " + bcol + "," + brow);
+//    console.log("col,row = bcol,brow => " + col + "," + row +
+//        " = " + bcol + "," + brow);
     return this.boxes[bcol - 1][brow - 1];
   };
 
   pub.Puzzle.prototype.get_cell = function(col, row) {
-    return this.cells[col-1][row-1];
+    return this.cells[col - 1][row - 1];
   };
 
   return pub;
@@ -212,26 +212,27 @@ var Solver = (function() {
   "use strict";
   var puzz;
   var q;   // just a shortcut
-  var coords = [1,2,3,4,5,6,7,8,9];   // TODO need a better way
+  var coords = [1, 2, 3, 4, 5, 6, 7, 8, 9];   // TODO need a better way
 
-  var Pri = { // TODO fix these priorities
-    FINISHED:                         0,
-    SET_CELL_VALUE:                   1,
-    REMOVE_SINGLE_GROUP_CANDIDATES:   2,
-    REMOVE_CELL_CANDIDATE:            3,
-    SCAN_PUZZLE_FOR_VALUES:           5,
+  var Pri = {// TODO fix these priorities
+    FINISHED: 0,
+    SET_CELL_VALUE: 1,
+    REMOVE_SINGLE_GROUP_CANDIDATES: 2,
+    REMOVE_CELL_CANDIDATE: 3,
+    CHECK_CELL_FOR_VALUE: 4,
+    SCAN_PUZZLE_FOR_VALUES: 5,
   };
 
   // private solver methods
 
-  var pf = {  // private funcs
+  var pf = {// private funcs
     finished: function() {
       // TODO how to detect
       console.log("finished");
     },
-
     remove_single_group_candidates: function(group, value) {
       // Remove value from candidates in a single constraint group.
+      console.log("remove_single_group_candidates()");
 
       _.each(group.cells, function(cell) {
         q.append_item(Pri.REMOVE_CELL_CANDIDATE, function() {
@@ -241,32 +242,41 @@ var Solver = (function() {
         });
       });
     },
-
     remove_all_cell_group_candidates: function(cell, value) {
       // Remove value from candidates of the cell's row, column and box.
+      console.log("remove_all_cell_group_candidates " + cell);
+
       _.each(cell.constraint_groups, function(group) {
-        console.log("q REMOVE_SINGLE_GROUP_CANDIDATES " + cell)
+        console.log("add to q REMOVE_SINGLE_GROUP_CANDIDATES " + cell);
         q.append_item(Pri.REMOVE_SINGLE_GROUP_CANDIDATES, function() {
           pf.remove_single_group_candidates(group, value);
           // TODO: remove cell from group
         });
       });
     },
-
-    scan_puzzle_for_values: function(puzzle) {
+    
+    check_cell_for_value: function(x, y) {
+      console.log("check_cell_for_value()");
+      var cell = puzz.get_cell(x, y);
+      if (cell.get_value() !== null) {
+        console.log("call pf.remove_all_cell_group_candidates(" + cell + ", " + cell.value + ")");
+        pf.remove_all_cell_group_candidates(cell, cell.value);
+      }
+    },
+    
+    scan_puzzle_for_values: function() {
       // in case cell values have been set without
       // any candidates being eliminated
+      console.log("scan_puzzle_for_values() called");
       _.each(coords, function(x) {
         _.each(coords, function(y) {
-          var cell = puzzle.get_cell(x,y);
-          if (cell.get_value() !== null) {
-            console.log("call pf.remove_all_cell_group_candidates(" + cell + ", " + cell.value + ")");
-            pf.remove_all_cell_group_candidates(cell, cell.value);
-          }
+          q.append_item(Pri.CHECK_CELL_FOR_VALUE, function() {
+            pf.check_cell_for_value(x, y);
+          });
         });
       });
     },
-
+    
     remove_cell_candidate: function(cell, value) {
       // remove candidate value from a single cell
       // if only one candidate remains, queue up set_value()
@@ -280,20 +290,21 @@ var Solver = (function() {
       }
     },
     set_cell_value: function(cell, value) {
+      console.log("set_cell_value()");
       cell.set_value(value);
       remove_all_cell_group_candidates(cell, value);
     }
   };
-  
+
   // public methods
   return {
     solve: function(puzzle, queue) {
       q = queue;
       puzz = puzzle;
       q.append_item(Pri.SCAN_PUZZLE_FOR_VALUES, function() {
-        pf.scan_puzzle_for_values(puzz);
+        pf.scan_puzzle_for_values();
       });
     }
   };
-  
+
 }());

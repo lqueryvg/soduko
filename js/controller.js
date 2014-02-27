@@ -3,13 +3,13 @@ var Controller = (function() {
 
 
   var pub = {}; // public interface
-  pub.do_next_event = function(q, interval) {
-    console.log("do_next_event() called");
+  pub.run = function(q, interval) {
+    console.log("q.run() called");
     var event_fn = q.get_next_item();
     if ( typeof event_fn === "function") {
       event_fn();
       window.setTimeout(function() {
-        pub.do_next_event(q, interval);
+        pub.run(q, interval);
       }, interval);
     }
   };

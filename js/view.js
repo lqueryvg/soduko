@@ -59,50 +59,22 @@
       // #b22 #c13
 
       var tab = create_table('box', 'b', // outer table
-                             function create_box_table() {
-                               //console.log(box_css_selector);
-                               return create_table('cell', 'c',
-                                                   function create_candidates_table() {
-                                                     //console.log(box_css_selector);
-                                                     return create_table('candidate', 'o',
-                                                                         function create_empty_cand() {
-                                                                           return '8'; // TODO: remove later
-                                                                         });
-                                                   });
-                             });
-                             document.body.appendChild(tab);
+              function create_box_table() {
+                //console.log(box_css_selector);
+                return create_table('cell', 'c',
+                        function create_candidates_table() {
+                          //console.log(box_css_selector);
+                          return create_table('candidate', 'o',
+                                  function create_empty_cand() {
+                                    return '8'; // TODO: remove later
+                                  });
+                        });
+              });
+      document.body.appendChild(tab);
     };
 
-    var visual_glue = function(puzzle) {
+    var insert_visual_glue = function(puzzle) {
       var aspects;
-
-      /*
-       * Need to glue the model and view together using Aspects so that
-       * changes to the model will update the view.
-       * Things needing glue:
-       *   Candidates.remove_candidate()
-       *   Cell.set_value()
-       */
-      aspects = new Aspects();
-
-      // Cell glue.
-      aspects.addBefore(function(new_value) {
-        var cell_selector = cell_element_map[this.toString()];
-
-        console.log('cell ' + this.toString() + ' changed');
-        console.log('selector = ' + cell_selector);
-        $(cell_selector).html(new_value);
-      }, Sud.Cell, 'set_value');
-
-      // Candidate glue.
-      aspects.addBefore(function(cell, candidate_value) {
-        var cell_selector = cell_element_map[this.toString()];
-        var cand_selector = cell_selector + ' ' +
-          candidate_selector_map[candidate_value];
-
-        $(cand_selector).css('background-color', 'pink');
-        $(cand_selector).animate({opacity: '0'}, 'slow');
-      }, Sud.Cell, 'remove_candidate');
 
       // Create lookup table mapping cell names to CSS selectors.
       puzzle.get_possible_values().forEach(function(col) {
@@ -118,6 +90,58 @@
           cell_element_map[cell_name] = box_selector + ' ' + cell_selector;
         });
       });
+      
+      /*
+       * Need to glue the model and view together using Aspects so that
+       * changes to the model will update the view.
+       * Things needing glue:
+       *   Candidates.remove_candidate()
+       *   Cell.set_value()
+       */
+      aspects = new Aspects();
+
+      // Cell glue.
+      aspects.addBefore(function(new_value) {
+        var cell_selector = cell_element_map[this.toString()];
+
+        //console.log('before set_value(), cell ' + this.toString() + ' changed');
+        console.log('before set_value(' + new_value + '), selector = ' + cell_selector);
+        $(cell_selector).html(new_value);
+        
+        $(cell_selector).animate({borderColor: 'pink'}, 100);
+        $(cell_selector).animate({borderColor: 'black'}, 100);
+        //$(cell_selector).css('background-color', 'pink');
+        //$(cell_selector).animate({backgroundColor: 'white'}, 'slow');
+      }, Sud.Cell, 'set_value');
+      
+      aspects.addAfter(function() {
+        var cell_selector = cell_element_map[this.toString()];
+        //var cell_selector = "#" + this.toString();
+        console.log("after get_value(), cell_selector = " + cell_selector);
+        //console.log("after get_value(), this.toString() = " + this.toString());
+        
+        var cell = $(cell_selector);
+        
+        //$(cell_selector).animate({"background-color": "limegreen"}, 100);
+        //$(cell_selector).animate({"background-color": "white"}, 100);
+        $(cell_selector).css({"background-color": "limegreen"});
+        $(cell_selector).animate({"background-color": "transparent"}, 200);
+        //$(cell_selector).animate({"border-width": 5}, 100);
+        //$(cell_selector).animate({"border-width": 1}, 100);
+       
+      }, Sud.Cell, 'get_value');
+      
+      // Candidate glue.
+      aspects.addBefore(function(cell, candidate_value) {
+        var cell_selector = cell_element_map[this.toString()];
+        var cand_selector = cell_selector + ' ' +
+          candidate_selector_map[candidate_value];
+
+        $(cand_selector).css('background-color', 'pink');
+        $(cand_selector).animate({opacity: '0'}, 'slow');
+      }, Sud.Cell, 'remove_candidate');
+
+
 
       puzzle.get_cell(1, 1).set_value(7);
       puzzle.get_cell(8, 2).set_value(1);
@@ -128,10 +152,10 @@
     $(document).ready(function() {
       create_html_grid();
       var puzzle = new Sud.Puzzle();
-      visual_glue(puzzle);
+      insert_visual_glue(puzzle);
       var q = new Controller.PriorityQueue();
       Solver.solve(puzzle, q);
-      Controller.do_next_event(q, 200);
+      Controller.run(q, 200);
     });
   })();
   global.View = View;
