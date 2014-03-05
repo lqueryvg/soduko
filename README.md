@@ -1,4 +1,4 @@
-soduko
+sudoku
 ======
 Work in progress. Probably doesn't even run.
 
