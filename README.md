@@ -6,4 +6,17 @@ This is not really about Sudoku; it's just me learning about Javascript and rela
 
 There's no end goal or objective at this point - just to learn.
 
+foo <font color='red'>bar</font> foo
 
+
+<p style="color:red">
+
+some red text
+
+</p>
+
+<table style="background-color: red">
+    <tr>
+        <td>Foo</td>
+    </tr>
+</table>
